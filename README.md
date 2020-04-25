@@ -74,6 +74,13 @@
 - **Method** \- Get
 - **Function** \- Returns a list of all exams
 
+**/api/Question/GetEnrolled (Authorized)**
+
+- **Arguments** \- none
+- **Method** \- Get
+- **Function** \- Returns a list of all exams in which the user has enrolled (in the format {"enrolled": {Dictionary<string, bool> of records} })
+
+
 **/api/Question/AddQuestion (~~Authorized Admin~~)**
 
 - **Arguments** \- type(string containing the type of mcq question(mcq,dnd,tabular etc.)), info(string containing json based on QuestionModel.<modeltype> except the Id value which is to be set server side)

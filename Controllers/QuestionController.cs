@@ -84,6 +84,19 @@ namespace PortalAPI.Controllers
             return Ok(new { exams });
         }
 
+        [HttpGet("GetEnrolled")]
+        [EnableCors("AllPolicy")]
+        [Authorize]
+        public async Task<IActionResult> GetEnrolled()
+        {
+            var currentUser = HttpContext.User;
+            var userId = currentUser.Claims.FirstOrDefault(c => c.Type == "id").Value;
+
+            ItemResponse<UserModel> UserResponse = await Ucontainer.ReadItemAsync<UserModel>(userId, new PartitionKey(userId));
+
+            return Ok(new { enrolled = UserResponse.Resource.Enrolled });
+        }
+
         [HttpPost("AddQuestion")]
         [EnableCors("AllPolicy")]
         /*[Authorize]*/
