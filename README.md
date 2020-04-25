@@ -1,6 +1,8 @@
 # PortalAPI
 
-## Route Definitions
+- _Striked out items have been turned off for testing convenience._
+
+## Route Definitions 
 
 ### PortalController
 
@@ -44,7 +46,7 @@
 
 - **Arguments** \- exam(string containing exam id)
 - **Method** \- Post
-- **Function** \- Call this route before starting payment process to ensure the user hasn't already paid for the course 
+- **Function** \- Call this route before starting payment process to ensure the user hasn't already paid for the course. Returns {"check" : true} if it's safe to proceed. 
 
 **/api/Portal/ConfirmPayment (Authorized)**
 
@@ -52,7 +54,7 @@
 - **Method** \- Post
 - **Function** \- Adds exam to the user's list of enrolled exams
 
-**/api/Portal/ConfirmPayment (Authorized)**
+**/api/Portal/GetTransactions (Authorized)**
 
 - **Arguments** \- none
 - **Method** \- Get
@@ -90,6 +92,5 @@
 - **Method** \- Post
 - **Function** \- Evaluates the exam completed by the user and sends a report via mail
 
-## Model Definitions
 
 
