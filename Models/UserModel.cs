@@ -27,6 +27,11 @@ namespace PortalAPI.Models
         [JsonProperty(PropertyName = "expiry")]
         public string Expiry { get; set; } = null;
 
+        // Updated enrolled definition to a dictionary 
+        // containing examid key and a boolean value
+        // representing if the user has taken the exam (true) or not (false).
+        // Currently does not serve any function. Might be of use later. 
+
         [JsonProperty(PropertyName = "enrolled")]
         public Dictionary<string, bool> Enrolled { get; set; } = new Dictionary<string, bool>();
 
