@@ -58,7 +58,7 @@
 - **Method** \- Get
 - **Function** \- Returns a list of purchases made by the user
 
-###QuestionController
+### QuestionController
 
 **/api/Question/AddExam (~~Authorized Admin~~)**
 
