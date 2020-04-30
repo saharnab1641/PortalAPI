@@ -156,7 +156,7 @@ namespace PortalAPI.Controllers
                 try
                 {
                     await Pcontainer.CreateItemAsync(fpm, new PartitionKey(fpm.Id));
-                    string resetURL = "http://localhost:53217/api/Portal/Middle" + "?" + "token=" + token;
+                    string resetURL = "http://codesizzlerexams.azurewebsites.net/reset-password/" + token;
                     string html = "Dear User,<br><br>Please click on this <a href=\"" + resetURL + "\">link</a> to reset your password.";
                     Email(html, User.Resource.Id, "Password Reset Link");
                 }
@@ -173,9 +173,9 @@ namespace PortalAPI.Controllers
             return Ok(new { message = "Password change link has been sent to your email." });
         }
 
-        [HttpPost("ResetPassword")]
+        [HttpPost("ResetPassword/{token}")]
         [EnableCors("AllPolicy")]
-        public async Task<IActionResult> ResetPassword([FromForm]string token)
+        public async Task<IActionResult> ResetPassword(string token)
         {
             cosmosClient = new CosmosClient(EndpointUri, PrimaryKey);
             Pdatabase = await CreateDatabaseAsync(PdatabaseId);
