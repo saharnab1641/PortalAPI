@@ -36,10 +36,10 @@ namespace PortalAPI
                 options.AddPolicy("AllPolicy",
                     builder =>
                     {
-                        builder.WithOrigins("https://codesizzlerexams.azurewebsites.net", "http://codesizzlerexams.azurewebsites.net")
+                        builder.AllowAnyOrigin()/*.WithOrigins("https://codesizzlerexams.azurewebsites.net", "http://codesizzlerexams.azurewebsites.net")*/
                                .AllowAnyHeader()
-                               .AllowAnyMethod()
-                               .AllowCredentials();
+                               .AllowAnyMethod();
+                        /*.AllowCredentials();*/
                     });
             });
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
