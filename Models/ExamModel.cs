@@ -28,6 +28,9 @@ namespace PortalAPI.Models
         [JsonProperty(PropertyName = "description")]
         public string Description { get; set; }
 
+        [JsonProperty(PropertyName = "examimage")]
+        public string ExamImage { get; set; }
+
         [JsonProperty(PropertyName = "pricing")]
         public string Pricing { get; set; }
     }

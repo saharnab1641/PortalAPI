@@ -24,8 +24,26 @@ namespace PortalAPI.Models
         [JsonProperty(PropertyName = "address")]
         public string Address { get; set; }
 
+        [JsonProperty(PropertyName = "state")]
+        public string State { get; set; }
+
+        [JsonProperty(PropertyName = "country")]
+        public string Country { get; set; }
+
+        [JsonProperty(PropertyName = "pincode")]
+        public string Pincode { get; set; }
+
         [JsonProperty(PropertyName = "expiry")]
         public string Expiry { get; set; } = null;
+
+        [JsonProperty(PropertyName = "jobtitle")]
+        public string JobTitle { get; set; }
+
+        [JsonProperty(PropertyName = "company")]
+        public string Company { get; set; }
+
+        [JsonProperty(PropertyName = "contact")]
+        public string Contact { get; set; }
 
         // Updated enrolled definition to a dictionary 
         // containing examid key and a boolean value

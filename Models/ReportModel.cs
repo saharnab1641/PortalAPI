@@ -29,6 +29,9 @@ namespace PortalAPI.Models
         [JsonProperty(PropertyName = "scored")]
         public int Scored { get; set; }
 
+        [JsonProperty(PropertyName = "reporturl")]
+        public string ReportURL { get; set; }
+
         [JsonProperty(PropertyName = "tnc")]
         public string TnC { get; set; } = "Terms and Conditions";
 

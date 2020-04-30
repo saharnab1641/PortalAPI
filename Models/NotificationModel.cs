@@ -22,5 +22,11 @@ namespace PortalAPI.Models
 
         [JsonProperty(PropertyName = "exam")]
         public string Exam { get; set; }
+
+        [JsonProperty(PropertyName = "etype")]
+        public string ExamType { get; set; }
+
+        [JsonProperty(PropertyName = "eserial")]
+        public string ExamSerial { get; set; }
     }
 }
