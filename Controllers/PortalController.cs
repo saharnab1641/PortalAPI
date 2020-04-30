@@ -222,6 +222,9 @@ namespace PortalAPI.Controllers
             cosmosClient = new CosmosClient(EndpointUri, PrimaryKey);
             Ndatabase = await CreateDatabaseAsync(NdatabaseId);
             Ncontainer = await CreateContainerAsync(Ndatabase, NcontainerId, "id");
+            Edatabase = await CreateDatabaseAsync(EdatabaseId);
+            Econtainer = await CreateContainerAsync(Edatabase, EcontainerId, "id");
+
 
             NotificationModel notification = new NotificationModel
             {
@@ -235,6 +238,9 @@ namespace PortalAPI.Controllers
             try
             {
                 // Read the item to see if it exists.  
+                ItemResponse<ExamModel> ExamResponse = await Econtainer.ReadItemAsync<ExamModel>(exam, new PartitionKey(exam));
+                notification.ExamType = ExamResponse.Resource.ExamType;
+                notification.ExamSerial = ExamResponse.Resource.ExamSerial;
                 ItemResponse<NotificationModel> NotiificationResponse = await Ncontainer.CreateItemAsync(notification, new PartitionKey(notification.Id));
             }
             catch (CosmosException ex)
@@ -263,7 +269,7 @@ namespace PortalAPI.Controllers
             ItemResponse<UserModel> UserResponse = await Ucontainer.ReadItemAsync<UserModel>(userId, new PartitionKey(userId));
             Dictionary<string, List<NotificationModel>> notifs = await GetNotificationList(UserResponse.Resource.Enrolled);
 
-            return Ok(new { notifs });
+            return Ok(new { notifications = notifs });
         }
 
         [HttpPost("InitiatePayment")]
@@ -364,16 +370,15 @@ namespace PortalAPI.Controllers
 
             var currentUser = HttpContext.User;
             var userId = currentUser.Claims.FirstOrDefault(c => c.Type == "id").Value;
-            List<TransactionModel> transactions = new List<TransactionModel>();
+            Dictionary<string, TransactionModel> transactions = new Dictionary<string, TransactionModel>();
 
             try
             {
                 ItemResponse<UserModel> UserResponse = await Ucontainer.ReadItemAsync<UserModel>(userId, new PartitionKey(userId));
-                List<TransactionModel> txns = new List<TransactionModel>();
                 foreach (string itemToRead in UserResponse.Resource.Transactions)
                 {
                     ItemResponse<TransactionModel> TransResponse = await Tcontainer.ReadItemAsync<TransactionModel>(itemToRead, new PartitionKey(itemToRead));
-                    txns.Add(TransResponse);
+                    transactions.Add(TransResponse.Resource.ExamID, TransResponse.Resource);
                 }
 
             }
@@ -539,7 +544,7 @@ namespace PortalAPI.Controllers
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new[] {
-                new Claim("admin", userInfo.IsAdmin.ToString()),
+                new Claim("isadmin", userInfo.IsAdmin.ToString()),
                 new Claim("id", userInfo.Id),
                 new Claim("name", userInfo.Name),
                 new Claim("key", userInfo.AccessCode),
