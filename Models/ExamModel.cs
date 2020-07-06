@@ -17,6 +17,24 @@ namespace PortalAPI.Models
         [JsonProperty(PropertyName = "eserial")]
         public string ExamSerial { get; set; }
 
+        [JsonProperty(PropertyName = "category")]
+        public string Category { get; set; }
+
+        [JsonProperty(PropertyName = "track")]
+        public string Track { get; set; }
+
+        [JsonProperty(PropertyName = "prerequisites")]
+        public List<string> Prerequisites { get; set; }
+
+        [JsonProperty(PropertyName = "target")]
+        public string Target { get; set; }
+
+        [JsonProperty(PropertyName = "outcome")]
+        public List<string> Outcome { get; set; }
+
+        [JsonProperty(PropertyName = "thumbdesc")]
+        public string ThumbDescription { get; set; }
+
         // Defining the various topics to be covered 
         // by the online courses bundled with the exam, 
         // the description of the topic and the time in hours 
@@ -40,10 +58,13 @@ namespace PortalAPI.Models
         [JsonProperty(PropertyName = "topic")]
         public string Topic { get; set; }
 
-        [JsonProperty(PropertyName = "description")]
-        public string Description { get; set; }
+        [JsonProperty(PropertyName = "upperperc")]
+        public string UpperPerc { get; set; }
 
-        [JsonProperty(PropertyName = "hours")]
-        public int Hours { get; set; }
+        [JsonProperty(PropertyName = "lowerperc")]
+        public string LowerPerc { get; set; }
+
+        [JsonProperty(PropertyName = "divisions")]
+        public List<string> Divisions { get; set; }
     }
 }
