@@ -17,6 +17,9 @@ using Microsoft.AspNetCore.Cors;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
+using System.IO;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 
 namespace PortalAPI.Controllers
 {
@@ -32,6 +35,8 @@ namespace PortalAPI.Controllers
 
         private static readonly string EndpointUri = "https://codesizzlercsdb.documents.azure.com:443";
         private static readonly string PrimaryKey = "gJZB3746gfqEVhwL5uFj85k28iPdbAc4prX3W9vxbSs9ChQmSy2DGtwp9GDw79UA5kMFLSQ9AFPs4TLDwCM2oQ==";
+        private static readonly string sendgridApiKey = "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";
+
         private CosmosClient cosmosClient;
         private Database Udatabase;
         private Container Ucontainer;
@@ -92,7 +97,7 @@ namespace PortalAPI.Controllers
                 string htmlMail = "Dear User,<br><br>You have been registered for Azure Ninjas Exams. Please check below for the details.<br><br>" +
                               "<b>Access Code:<b> " + accessKey +
                               "<br><b>Code Expiry:<b> " + (user.Expiry == null ? "None" : user.Expiry);
-                Email(htmlMail, email, "Registration Successful");
+                var response = await SendGridEmail(htmlMail, email, "Registration Successful", null);
             }
 
             return accessKey + " " + (user.Expiry == null ? "None" : user.Expiry);
@@ -158,7 +163,7 @@ namespace PortalAPI.Controllers
                     await Pcontainer.CreateItemAsync(fpm, new PartitionKey(fpm.Id));
                     string resetURL = "http://codesizzlerexams.azurewebsites.net/reset-password/" + token;
                     string html = "Dear User,<br><br>Please click on this <a href=\"" + resetURL + "\">link</a> to reset your password.";
-                    Email(html, User.Resource.Id, "Password Reset Link");
+                    var response = await SendGridEmail(html, User.Resource.Id, "Password Reset Link", null);
                 }
                 catch (Exception e)
                 {
@@ -173,9 +178,9 @@ namespace PortalAPI.Controllers
             return Ok(new { message = "Password change link has been sent to your email." });
         }
 
-        [HttpPost("ResetPassword/{token}")]
+        [HttpPost("ResetPassword")]
         [EnableCors("AllPolicy")]
-        public async Task<IActionResult> ResetPassword(string token)
+        public async Task<IActionResult> ResetPassword([FromForm] string token)
         {
             cosmosClient = new CosmosClient(EndpointUri, PrimaryKey);
             Pdatabase = await CreateDatabaseAsync(PdatabaseId);
@@ -198,7 +203,7 @@ namespace PortalAPI.Controllers
                 await Ucontainer.ReplaceItemAsync(user.Resource, user.Resource.Id, new PartitionKey(user.Resource.Id));
                 string htmlMail = "Dear User,<br><br>Your access key has been successfully reset. Please check below for the new access key.<br><br>" +
                               "<b>Access Code:<b> " + newKey;
-                Email(htmlMail, user.Resource.Id, "Key Reset Successfully");
+                var response = await SendGridEmail(htmlMail, user.Resource.Id, "Key Reset Successfully", null);
             }
             catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
             {
@@ -486,7 +491,29 @@ namespace PortalAPI.Controllers
             return notifColl;
         }
 
-        public static void Email(string htmlString, string email, string subject)
+        public static async Task<dynamic> SendGridEmail(string htmlString, string email, string subject, MemoryStream ms = null)
+        {
+            var client = new SendGridClient(sendgridApiKey);
+            var msgs = new SendGridMessage()
+            {
+                From = new EmailAddress("saharnab.test@gmail.com"),
+                Subject = subject,
+                HtmlContent = htmlString
+            };
+            msgs.AddTo(new EmailAddress(email));
+            if (ms != null)
+            {
+                ms.Position = 0;
+                await msgs.AddAttachmentAsync("Test.pdf", ms, "application/pdf");
+            }
+            /*msgs.SetFooterSetting(true, "<strong>Regards,</strong><b> Pankaj Sapkal", "Pankaj");*/
+            //Tracking (Appends an invisible image to HTML emails to track emails that have been opened)  
+            //msgs.SetClickTracking(true, true);  
+            var response = await client.SendEmailAsync(msgs);
+            return response;
+        }
+
+        /*public async static void Email(string htmlString, string email, string subject)
         {
             try
             {
@@ -503,10 +530,10 @@ namespace PortalAPI.Controllers
                 smtp.UseDefaultCredentials = false;
                 smtp.Credentials = new NetworkCredential("saharnab.test@gmail.com", "testpassword123!");
                 smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
-                smtp.Send(message);
+                await smtp.SendMailAsync(message);
             }
             catch (Exception) { }
-        }
+        }*/
 
         private async Task<Database> CreateDatabaseAsync(string dbId)
         {

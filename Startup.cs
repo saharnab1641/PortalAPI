@@ -36,7 +36,7 @@ namespace PortalAPI
                 options.AddPolicy("AllPolicy",
                     builder =>
                     {
-                        builder.WithOrigins("https://codesizzlerexams.azurewebsites.net", "http://codesizzlerexams.azurewebsites.net", "http://localhost:3000", "127.0.0.1:3000")
+                        builder.WithOrigins("https://codesizzlerexams.azurewebsites.net", "http://codesizzlerexams.azurewebsites.net", "http://localhost:3000")
                                .AllowAnyHeader()
                                .AllowAnyMethod()
                                .AllowCredentials();

@@ -20,6 +20,8 @@ using Microsoft.Azure.Storage.Auth;
 using System.Text;
 using System.IO;
 using System.Security.Cryptography;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 
 namespace PortalAPI.Controllers
 {
@@ -38,6 +40,7 @@ namespace PortalAPI.Controllers
         private static readonly string AccountKey = "zdUViL51nXIZ5ILevk1zFpCqFv6qaf8wsH6sIwMvbPPMGdGHFYM37s3/7zMhQ4VE8xoAmTeAO5RlS70jKu8+4A==";
         private static readonly string AccountName = "examportaldocs";
         private static readonly string TemplateSrc = "https://examportaldocs.blob.core.windows.net/template/certificatetemplate.pdf";
+        private static readonly string sendgridApiKey = "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";
 
         private CosmosClient cosmosClient;
         private Database Qdatabase;
@@ -448,7 +451,7 @@ namespace PortalAPI.Controllers
                 writeStream.Position = 0;
                 await blob.UploadFromStreamAsync(writeStream);
                 string html = "Dear User,<br><br>Your exam has been successfully conducted. The transcript has been attached with this mail.";
-                Email(html, UserResponse.Resource.Id, "Exam Report", writeStream);
+                var resonse = await SendGridEmail(html, UserResponse.Resource.Id, "Exam Report", writeStream);
 
                 var blobUri = blob.Uri.ToString();
                 report.ReportURL = blobUri;
@@ -461,6 +464,26 @@ namespace PortalAPI.Controllers
 
             return Ok(new { report });
         }
+
+        /*[HttpGet("TestMail")]
+        [EnableCors("AllPolicy")]
+        public async Task<IActionResult> TestMail()
+        {
+            MemoryStream writeStream = new MemoryStream();
+            PdfWriter pdfWriter = new PdfWriter(writeStream);
+            pdfWriter.SetCloseStream(false);
+            PdfDocument pdfDoc = new PdfDocument(new PdfReader(TemplateSrc), pdfWriter);
+            PdfAcroForm form = PdfAcroForm.GetAcroForm(pdfDoc, true);
+
+            form.GetField("name").SetValue("Name").SetReadOnly(true);
+
+            pdfDoc.Close();
+
+            string html = "Dear User,<br><br>Your exam has been successfully conducted. The transcript has been attached with this mail.";
+            var response = await SendGridEmail(html, "saharnab1641@gmail.com", "Exam Report", writeStream);
+
+            return Ok(new { response });
+        }*/
 
         //----------------------------Helper Methods----------------------------//
 
@@ -550,7 +573,29 @@ namespace PortalAPI.Controllers
             return "Added";
         }
 
-        public static void Email(string htmlString, string email, string subject, MemoryStream ms)
+        public static async Task<dynamic> SendGridEmail(string htmlString, string email, string subject, MemoryStream ms = null)
+        {
+            var client = new SendGridClient(sendgridApiKey);
+            var msgs = new SendGridMessage()
+            {
+                From = new EmailAddress("saharnab.test@gmail.com"),
+                Subject = subject,
+                HtmlContent = htmlString
+            };
+            msgs.AddTo(new EmailAddress(email));
+            if (ms != null)
+            {
+                ms.Position = 0;
+                await msgs.AddAttachmentAsync("Test.pdf", ms, "application/pdf");
+            }
+            /*msgs.SetFooterSetting(true, "<strong>Regards,</strong><b> Pankaj Sapkal", "Pankaj");*/
+            //Tracking (Appends an invisible image to HTML emails to track emails that have been opened)  
+            //msgs.SetClickTracking(true, true);  
+            var response = await client.SendEmailAsync(msgs);
+            return response;
+        }
+
+        /*public static async void Email(string htmlString, string email, string subject, MemoryStream ms = null)
         {
             try
             {
@@ -564,7 +609,7 @@ namespace PortalAPI.Controllers
                 if (ms != null)
                 {
                     ms.Position = 0;
-                    message.Attachments.Add(new Attachment(ms, "Test.pdf", "application/pdf"));
+                    message.Attachments.Add(new System.Net.Mail.Attachment(ms, "Test.pdf", "application/pdf"));
                 }
                 smtp.Port = 587;
                 smtp.Host = "smtp.gmail.com"; //for gmail host  
@@ -572,10 +617,10 @@ namespace PortalAPI.Controllers
                 smtp.UseDefaultCredentials = false;
                 smtp.Credentials = new NetworkCredential("saharnab.test@gmail.com", "testpassword123!");
                 smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
-                smtp.Send(message);
+                await smtp.SendMailAsync(message);
             }
             catch (Exception) { }
-        }
+        }*/
 
         private async Task<AllModel> GetQuestionList(string examID, bool hideSolution = true)
         {
