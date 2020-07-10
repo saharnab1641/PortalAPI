@@ -27,19 +27,16 @@ namespace PortalAPI.Models
         public List<string> Prerequisites { get; set; }
 
         [JsonProperty(PropertyName = "target")]
-        public string Target { get; set; }
+        public List<string> Target { get; set; }
 
         [JsonProperty(PropertyName = "outcome")]
         public List<string> Outcome { get; set; }
 
-        [JsonProperty(PropertyName = "thumbdesc")]
+        [JsonProperty(PropertyName = "thumbdesc")] //short description under thumbnail
         public string ThumbDescription { get; set; }
 
-        // Defining the various topics to be covered 
-        // by the online courses bundled with the exam, 
-        // the description of the topic and the time in hours 
-        // to complete that particular topic. There may be multiple topics 
-        // and hence a list of such models are to be maintained.
+        //Description ad division of course modules and importance percentages
+
         [JsonProperty(PropertyName = "trackdetails")]
         public List<TrackModel> TrackDetails { get; set; } = new List<TrackModel>(); //see below for TrackModel definition
 

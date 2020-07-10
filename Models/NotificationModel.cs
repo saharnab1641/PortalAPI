@@ -11,6 +11,9 @@ namespace PortalAPI.Models
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
 
+        [JsonProperty(PropertyName = "category")]
+        public string Category { get; set; }
+
         [JsonProperty(PropertyName = "message")]
         public string Message { get; set; }
 
