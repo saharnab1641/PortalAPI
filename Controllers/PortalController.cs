@@ -246,6 +246,7 @@ namespace PortalAPI.Controllers
                 ItemResponse<ExamModel> ExamResponse = await Econtainer.ReadItemAsync<ExamModel>(exam, new PartitionKey(exam));
                 notification.ExamType = ExamResponse.Resource.ExamType;
                 notification.ExamSerial = ExamResponse.Resource.ExamSerial;
+                notification.Category = ExamResponse.Resource.Category;
                 ItemResponse<NotificationModel> NotiificationResponse = await Ncontainer.CreateItemAsync(notification, new PartitionKey(notification.Id));
             }
             catch (CosmosException ex)
@@ -479,11 +480,11 @@ namespace PortalAPI.Controllers
                 {
                     if (DateTime.Compare(DateTime.Now, n.IssueTill) < 0)
                     {
-                        if (!notifColl.ContainsKey(n.Exam))
+                        if (!notifColl.ContainsKey(n.Category))
                         {
-                            notifColl.Add(n.Exam, new List<NotificationModel>());
+                            notifColl.Add(n.Category, new List<NotificationModel>());
                         }
-                        notifColl[n.Exam].Add(n);
+                        notifColl[n.Category].Add(n);
                     }
                 }
             }
@@ -571,7 +572,7 @@ namespace PortalAPI.Controllers
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new[] {
-                new Claim("isadmin", userInfo.IsAdmin.ToString()),
+                new Claim("isAdmin", userInfo.IsAdmin.ToString()),
                 new Claim("id", userInfo.Id),
                 new Claim("name", userInfo.Name),
                 new Claim("key", userInfo.AccessCode),
