@@ -241,13 +241,15 @@ namespace PortalAPI.Controllers
         [HttpPost("Evaluate")]
         [EnableCors("AllPolicy")]
         [Authorize]
-        public async Task<IActionResult> Evaluate([FromForm]List<EvaluateModel> answers, [FromForm]string examID)
+        public async Task<IActionResult> Evaluate([FromForm]string answers, [FromForm]string examID)
         {
             /*var currTime = DateTime.Now;
             if (currTime.Subtract(prevTime).TotalMinutes.Equals())
             {
 
             }*/
+
+            List<EvaluateModel> answersList = JsonConvert.DeserializeObject<List<EvaluateModel>>(answers);
 
             cosmosClient = new CosmosClient(EndpointUri, PrimaryKey);
             Udatabase = await CreateDatabaseAsync(UdatabaseId);
@@ -290,7 +292,7 @@ namespace PortalAPI.Controllers
             AllModel questions = await GetQuestionList(examID, false);
 
 
-            foreach (EvaluateModel answer in answers)
+            foreach (EvaluateModel answer in answersList)
             {
                 switch (answer.questionType)
                 {
@@ -727,11 +729,11 @@ namespace PortalAPI.Controllers
             foreach (var item in exams)
             {
                 ExamModel q = JsonConvert.DeserializeObject<ExamModel>(JsonConvert.SerializeObject(item));
-                if (!examColl.ContainsKey(q.ExamType))
+                if (!examColl.ContainsKey(q.Category))
                 {
-                    examColl.Add(q.ExamType, new List<ExamModel>());
+                    examColl.Add(q.Category, new List<ExamModel>());
                 }
-                examColl[q.ExamType].Add(q);
+                examColl[q.Category].Add(q);
             }
 
             return examColl;
