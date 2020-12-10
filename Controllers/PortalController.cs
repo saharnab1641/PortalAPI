@@ -33,9 +33,9 @@ namespace PortalAPI.Controllers
             _config = config;
         }
 
-        private static readonly string EndpointUri = "https://codesizzlercsdb.documents.azure.com:443";
-        private static readonly string PrimaryKey = "gJZB3746gfqEVhwL5uFj85k28iPdbAc4prX3W9vxbSs9ChQmSy2DGtwp9GDw79UA5kMFLSQ9AFPs4TLDwCM2oQ==";
-        private static readonly string sendgridApiKey = "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";
+        private static readonly string EndpointUri = "";
+        private static readonly string PrimaryKey = "";
+        private static readonly string sendgridApiKey = "";
 
         private CosmosClient cosmosClient;
         private Database Udatabase;
